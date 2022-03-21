@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #view {
+
+        }
+    </style>
+    <script>
+        window.onload = () => {
+            console.log('DOM has loaded');
+            //create Router constructor
+            var view = document.getElementById('view');
+
+            //grab all active attribute routes
+
+            var activeRoutes = Array.from(document.querySelectorAll('[route]'))
+
+            function navigate(event) {
+                var route = event.target.attributes[0].value;
+                var routeInfo = myFirstRouter.routes.filter((r) => {
+                    return r.path === route;
+                })[0];
+                if(!routeInfo){
+                    window.history.pushState({}, '', 'error')
+                    view.innerHTML = 'No route exists with this path'
+                }else {
+                    window.history.pushState({}, 'name', routeInfo.path);
+                    view.innerHTML = `You have clicked the ${routeInfo.name} route`
+                }
+            };
+
+
+            //add event listener
+            activeRoutes.forEach((route) => {
+                route.addEventListener('click', navigate, false);
+            });
+
+
+            class Router{
+                constructor(name, routes){
+                    this.name= name,
+                    this.routes= routes
+                }
+            }
+            var myFirstRouter = new Router('myfirstRouter', [
+                {
+                    path: '/',
+                    name:'Root'
+                },
+                {
+                    path: '/about',
+                    name: 'About'
+                },
+                {
+                    path: '/contact',
+                    name: 'Contact'
+                }
+            ]);
+            
+            var currentPath = window.location.pathname;
+            if(currentPath === '/'){
+                view.innerHTML = 'You are on the root page';
+            }else {
+                var route = myFirstRouter.routes.filter((r) => {
+                    return r.path === currentPath
+                })[0];
+                if(route) {
+                    view.innerHTML = `You are on the ${route.name} path`
+
+                }else {
+                    view.innerHTML = `No route matches this pattern`
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <h3>Efecan router</h3>
+    <div id="view"></div>
+    <a route="/" href="#">Root</a>
+    <a route="/about" href="#">  About </a>
+    <a route="/contact" href="#">Contact</a>
+    <button route="404">404</button>
+
+</body>
+</html>
